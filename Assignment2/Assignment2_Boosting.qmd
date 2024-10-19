@@ -1,0 +1,120 @@
+---
+title: "matplotlib demo"
+format:
+  html:
+    code-fold: false
+jupyter: python3
+---
+
+# Importing data and preprocessing 
+```{python}
+import pandas as pd
+import numpy as np
+from pandas.core.common import random_state
+import xgboost as xgb
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+```
+
+
+
+```{python}
+df = pd.read_csv('Data/train.csv')
+df.drop(columns=['Name','Ticket', 'Cabin'], inplace=True)
+df
+```
+
+
+```{python}
+cols_with_nan = df.isna().sum() * 100 / df.shape[0]
+cols_with_nan
+```
+```{python}
+df.drop(columns=['Age'], inplace=True)
+```
+
+```{python}
+df.loc[df['Sex'] == 'male', 'Sex'] = 0
+df.loc[df['Sex'] == 'female', 'Sex'] = 1
+df
+```
+
+```{python}
+# df.drop(labels=df.index[df['Embarked'].isna], inplace=True)
+df.drop(labels=df.index[df['Embarked'].isna()], inplace=True)
+cols_with_nan = df.isna().sum() * 100 / df.shape[0]
+cols_with_nan
+```
+
+
+```{python}
+df['Embarked'].unique()
+```
+
+
+```{python}
+df.loc[df['Embarked'] == 'S', 'Embarked'] = 0
+df.loc[df['Embarked'] == 'Q', 'Embarked'] = 1
+df.loc[df['Embarked'] == 'C', 'Embarked'] = 2
+df.describe()
+```
+
+
+```{python}
+df = pd.get_dummies(df, columns=['Sex', 'Embarked'])
+
+x_data = df.drop(columns=['Survived'])
+y_data = df['Survived']
+
+best_ind = -1
+best_acc = 0
+best_seed = -1
+
+# for i in range(1,11):
+    # for j in range(0,150):
+        # clf = xgb.XGBClassifier(n_estimators=11, learning_rate=0.1, max_depth=i, random_state=j, enable_categorical=True)
+        # x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2, random_state=27+i)
+        # clf.fit(x_train, y_train)
+        # pred = clf.predict(x_test)
+        # sc = accuracy_score(pred, y_test)
+        # (best_ind, best_acc, best_seed) = (i, accuracy_score(pred, y_test), j) if sc > best_acc else (best_ind, best_acc, j)
+
+# print(best_acc, best_ind, best_seed)
+```
+
+```{python}
+
+dt_model = xgb.XGBClassifier(n_estimators=7, learning_rate=0.325, max_depth=7, random_state=1, enable_categorical=True)
+dt_model.fit(x_data, y_data)
+# y_pred = dt_model.predict()
+
+
+test_data = pd.read_csv('Data/test.csv')
+
+# df.drop(columns=['Name','Ticket', 'Cabin', 'Age'], inplace=True)
+test_data.drop(columns=['Name','Ticket', 'Cabin', 'Age'], inplace=True, errors='ignore')
+
+
+test_data.loc[test_data['Sex'] == 'male', 'Sex'] = 0
+test_data.loc[test_data['Sex'] == 'female', 'Sex'] = 1
+
+
+
+# | Removing the rows with nan 
+test_data.loc[test_data['Embarked']=='S', 'Embarked'] = 0
+test_data.loc[test_data['Embarked']=='Q', 'Embarked'] = 1
+test_data.loc[test_data['Embarked']=='C', 'Embarked'] = 2
+
+test_data
+```
+
+```{python}
+test_data = pd.get_dummies(test_data, columns=['Sex', 'Embarked'])
+result_df = pd.DataFrame()
+result_df['PassengerId'] = test_data['PassengerId']
+result = dt_model.predict(test_data)
+result_df['Survived'] = result
+result_df.to_csv('Data/final_boosting_submission.csv', index=False)
+
+```
+

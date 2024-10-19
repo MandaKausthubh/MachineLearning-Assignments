@@ -1,0 +1,111 @@
+---
+title: Assignment_2_Submission
+format: html
+---
+
+# Preprocessing the Data
+
+## Importing Libraries
+```{python}
+from re import X
+from numpy.lib import test
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+## Importing the data
+```{python}
+data_df = pd.read_csv("Data/train.csv")
+data_df
+```
+
+## Cleaning the Columns with more than 10% null values
+```{python}
+df_percentage = data_df.isna().sum() * 100 / data_df.shape[0]
+cols_with_null = df_percentage[df_percentage > 5]
+cols_with_null.keys()
+```
+
+```{python}
+data_df.drop(columns=cols_with_null.keys(), inplace=True)
+data_df.drop(columns=['Name', 'Ticket'], inplace=True)
+data_df.loc[data_df['Sex'] == 'male', 'Sex'] = 0
+data_df.loc[data_df['Sex'] == 'female', 'Sex'] = 1
+
+
+
+# | Removing the rows with nan 
+data_df.drop(labels=data_df.index[data_df['Embarked'].isna()], inplace=True)
+```
+
+# Training the data
+
+```{python}
+data_df.loc[data_df['Embarked']=='S', 'Embarked'] = 0
+data_df.loc[data_df['Embarked']=='Q', 'Embarked'] = 1
+data_df.loc[data_df['Embarked']=='C', 'Embarked'] = 2
+
+data_df['Sex'].describe()
+```
+
+```{python}
+from pandas.core.generic import dt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score 
+import xgboost as xgb
+from xgboost import XGBClassifier
+
+data_x = data_df.drop(columns='Survived', inplace=False)
+data_y = data_df['Survived']
+
+listofrandomstates = 1
+max_Accuracy = 0
+for i in range(1,51):
+    X_test, X_train, y_test, y_train = train_test_split(data_x, data_y, test_size=0.3, random_state=45)
+    dt_model = XGBClassifier(random_state=i, learning_rate=0.1, n_estimators=10)
+    dt_model.fit(X_train, y_train )
+    # y_pred = dt_model.predict(X_test)
+
+    # accuracy = accuracy_score(y_test, y_pred)
+    # listofrandomstates, max_Accuracy = (i, accuracy) if max_Accuracy < accuracy else (listofrandomstates, max_Accuracy)
+    # print(accuracy)
+```
+
+
+```{python}
+
+dt_model = DecisionTreeClassifier(random_state=listofrandomstates)
+dt_model.fit(data_x,data_y)
+# y_pred = dt_model.predict()
+
+
+test_data = pd.read_csv('Data/test.csv')
+test_data.drop(columns=['Name', 'Ticket'], inplace=True)
+
+test_data.loc[test_data['Sex'] == 'male', 'Sex'] = 0
+test_data.loc[test_data['Sex'] == 'female', 'Sex'] = 1
+
+
+
+# | Removing the rows with nan 
+test_data.drop(labels=data_df.index[data_df['Embarked'].isna()], inplace=True)
+test_data.drop(columns=cols_with_null.keys(), inplace=True)
+
+test_data.loc[test_data['Embarked']=='S', 'Embarked'] = 0
+test_data.loc[test_data['Embarked']=='Q', 'Embarked'] = 1
+test_data.loc[test_data['Embarked']=='C', 'Embarked'] = 2
+
+test_data
+```
+
+```{python}
+result_df = pd.DataFrame()
+result_df['PassengerID'] = test_data['PassengerId']
+result = dt_model.predict(test_data)
+result_df['Survived'] = result
+result_df.to_csv('Data/final_submission.csv', index=False)
+
+```
+
