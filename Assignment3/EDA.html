@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="EDA_files/libs/clipboard/clipboard.min.js"></script>
+<script src="EDA_files/libs/clipboard/clipboard.min.js"></script>
 <script src="EDA_files/libs/quarto-html/quarto.js"></script>
 <script src="EDA_files/libs/quarto-html/popper.min.js"></script>
 <script src="EDA_files/libs/quarto-html/tippy.umd.min.js"></script>
@@ -67,9 +67,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="EDA_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="EDA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="EDA_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -101,7 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="importing-python-packages" class="level1">
 <h1>Importing Python Packages</h1>
-<div id="4dca2f58" class="cell" data-execution_count="1">
+<div id="aff6240e" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> floor</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -109,159 +106,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="preprocessing-the-data" class="level1">
 <h1>Preprocessing the data</h1>
-<div id="a0734d50" class="cell" data-execution_count="2">
+<div id="d9716e7c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PreProcessingData( df:pd.DataFrame ):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    df.drop(inplace<span class="op">=</span><span class="va">True</span>, columns<span class="op">=</span>[<span class="st">'ID'</span>, <span class="st">'Customer_ID'</span>, <span class="st">'Number'</span>, <span class="st">'Name'</span>, <span class="st">'Loan_Type'</span>])</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> df.isna().<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span> <span class="op">/</span> df.shape[<span class="dv">0</span>]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> cols_with_NaNs[cols_with_NaNs <span class="op">&gt;=</span> <span class="dv">5</span>].keys()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    df.drop(columns<span class="op">=</span>cols_with_NaNs, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Total_Current_Loans"</span>] <span class="op">=</span> df[<span class="st">"Total_Current_Loans"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">int</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">int</span>(x))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Income_Annual"</span>] <span class="op">=</span> df[<span class="st">"Income_Annual"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Age"</span>] <span class="op">=</span> df[<span class="st">"Age"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Payment_of_Min_Amount"</span>] <span class="op">=</span> df[<span class="st">"Payment_of_Min_Amount"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x : <span class="va">True</span> <span class="cf">if</span> (x<span class="op">==</span><span class="st">"Yes"</span> <span class="kw">or</span> x<span class="op">==</span><span class="st">"NM"</span>) <span class="cf">else</span> <span class="va">False</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Checking removing rows with NaNs and '-100' number of loans</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> df.columns:</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        df.drop(labels<span class="op">=</span>df.index[df[col].isna()], inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Age"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Total_Bank_Accounts"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Total_Current_Loans"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    PreProcessingData.list_of_dropped_columns <span class="op">=</span> [<span class="st">'ID'</span>, <span class="st">'Customer_ID'</span>, <span class="st">'Number'</span>, <span class="st">'Name'</span>, <span class="st">'Loan_Type'</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> df.isna().<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span> <span class="op">/</span> df.shape[<span class="dv">0</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> cols_with_NaNs[cols_with_NaNs <span class="op">&gt;=</span> <span class="dv">5</span>].keys()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    PreProcessingData.list_of_dropped_columns <span class="op">+=</span> (<span class="bu">list</span>(cols_with_NaNs))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    df.drop(columns<span class="op">=</span>cols_with_NaNs, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Total_Current_Loans"</span>] <span class="op">=</span> df[<span class="st">"Total_Current_Loans"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">int</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">int</span>(x))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Income_Annual"</span>] <span class="op">=</span> df[<span class="st">"Income_Annual"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Age"</span>] <span class="op">=</span> df[<span class="st">"Age"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Payment_of_Min_Amount"</span>] <span class="op">=</span> df[<span class="st">"Payment_of_Min_Amount"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x : <span class="va">True</span> <span class="cf">if</span> (x<span class="op">==</span><span class="st">"Yes"</span> <span class="kw">or</span> x<span class="op">==</span><span class="st">"NM"</span>) <span class="cf">else</span> <span class="va">False</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Checking removing rows with NaNs and '-100' number of loans</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> df.columns:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> np.<span class="bu">any</span>(df[col].isna):</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(col)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        df.drop(labels<span class="op">=</span>df.index[df[col].isna()], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Age"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Total_Bank_Accounts"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    df.drop(labels<span class="op">=</span>df.index[df[<span class="st">"Total_Current_Loans"</span>] <span class="op">&lt;</span> <span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="61df1619" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/train.csv"</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>PreProcessingData(df)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Age</th>
-<th data-quarto-table-cell-role="th">Income_Annual</th>
-<th data-quarto-table-cell-role="th">Total_Bank_Accounts</th>
-<th data-quarto-table-cell-role="th">Total_Credit_Cards</th>
-<th data-quarto-table-cell-role="th">Rate_Of_Interest</th>
-<th data-quarto-table-cell-role="th">Total_Current_Loans</th>
-<th data-quarto-table-cell-role="th">Delay_from_due_date</th>
-<th data-quarto-table-cell-role="th">Total_Credit_Enquiries</th>
-<th data-quarto-table-cell-role="th">Ratio_Credit_Utilization</th>
-<th data-quarto-table-cell-role="th">Per_Month_EMI</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">count</td>
-<td>70508.000000</td>
-<td>7.050800e+04</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-<td>70508.000000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">mean</td>
-<td>116.610441</td>
-<td>1.763112e+05</td>
-<td>17.072233</td>
-<td>22.129460</td>
-<td>71.861548</td>
-<td>7.316205</td>
-<td>21.041102</td>
-<td>27.990398</td>
-<td>32.293634</td>
-<td>1421.875754</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">std</td>
-<td>689.765365</td>
-<td>1.433263e+06</td>
-<td>117.154601</td>
-<td>127.678459</td>
-<td>465.620856</td>
-<td>61.455660</td>
-<td>14.836551</td>
-<td>193.877772</td>
-<td>5.105018</td>
-<td>8355.955890</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">min</td>
-<td>14.000000</td>
-<td>7.005930e+03</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>1.000000</td>
-<td>0.000000</td>
-<td>-5.000000</td>
-<td>0.000000</td>
-<td>20.881250</td>
-<td>0.000000</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">25%</td>
-<td>25.000000</td>
-<td>1.929624e+04</td>
-<td>3.000000</td>
-<td>4.000000</td>
-<td>8.000000</td>
-<td>2.000000</td>
-<td>10.000000</td>
-<td>3.000000</td>
-<td>28.074354</td>
-<td>29.916254</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">50%</td>
-<td>33.000000</td>
-<td>3.684991e+04</td>
-<td>6.000000</td>
-<td>5.000000</td>
-<td>13.000000</td>
-<td>3.000000</td>
-<td>18.000000</td>
-<td>6.000000</td>
-<td>32.316108</td>
-<td>68.072981</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">75%</td>
-<td>42.000000</td>
-<td>7.190326e+04</td>
-<td>7.000000</td>
-<td>7.000000</td>
-<td>20.000000</td>
-<td>5.000000</td>
-<td>28.000000</td>
-<td>9.000000</td>
-<td>36.491464</td>
-<td>155.501023</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">max</td>
-<td>8698.000000</td>
-<td>2.419806e+07</td>
-<td>1794.000000</td>
-<td>1499.000000</td>
-<td>5797.000000</td>
-<td>1480.000000</td>
-<td>67.000000</td>
-<td>2597.000000</td>
-<td>49.564519</td>
-<td>82331.000000</td>
-</tr>
-</tbody>
-</table>
-
+<div id="55ce3488" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PreProcessingTestData( df:pd.DataFrame ):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    df.drop(inplace<span class="op">=</span><span class="va">True</span>, columns<span class="op">=</span>PreProcessingData.list_of_dropped_columns)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> df.isna().<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span> <span class="op">/</span> df.shape[<span class="dv">0</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    cols_with_NaNs <span class="op">=</span> cols_with_NaNs[cols_with_NaNs <span class="op">&gt;=</span> <span class="dv">5</span>].keys()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    df.drop(columns<span class="op">=</span>cols_with_NaNs, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Total_Current_Loans"</span>] <span class="op">=</span> df[<span class="st">"Total_Current_Loans"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">int</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">int</span>(x))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Income_Annual"</span>] <span class="op">=</span> df[<span class="st">"Income_Annual"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Age"</span>] <span class="op">=</span> df[<span class="st">"Age"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">float</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="cf">if</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span> <span class="st">'_'</span> <span class="cf">else</span> <span class="bu">float</span>(x))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Payment_of_Min_Amount"</span>] <span class="op">=</span> df[<span class="st">"Payment_of_Min_Amount"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x : <span class="va">True</span> <span class="cf">if</span> (x<span class="op">==</span><span class="st">"Yes"</span> <span class="kw">or</span> x<span class="op">==</span><span class="st">"NM"</span>) <span class="cf">else</span> <span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div id="18a333d3" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/train.csv"</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>PreProcessingData(df)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df.describe()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(PreProcessingData.list_of_dropped_columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Month
+Age
+Profession
+Income_Annual
+Total_Bank_Accounts
+Total_Credit_Cards
+Rate_Of_Interest
+Total_Current_Loans
+Delay_from_due_date
+Credit_Limit
+Total_Credit_Enquiries
+Credit_Mix
+Current_Debt_Outstanding
+Ratio_Credit_Utilization
+Payment_of_Min_Amount
+Per_Month_EMI
+Monthly_Investment
+Payment_Behaviour
+Monthly_Balance
+Credit_Score
+['ID', 'Customer_ID', 'Number', 'Name', 'Loan_Type', 'Base_Salary_PerMonth', 'Total_Delayed_Payments', 'Credit_History_Age']</code></pre>
+</div>
+</div>
+<div id="b36ee42e" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> pd.read_csv(<span class="st">"data/test.csv"</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(test_df.shape)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>PreProcessingTestData(test_df)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(test_df.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(20000, 27)
+(20000, 19)</code></pre>
 </div>
 </div>
 </section>

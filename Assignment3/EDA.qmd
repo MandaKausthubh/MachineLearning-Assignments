@@ -16,10 +16,14 @@ import numpy as np
 
 # Preprocessing the data
 ```{python}
+
+
 def PreProcessingData( df:pd.DataFrame ):
     df.drop(inplace=True, columns=['ID', 'Customer_ID', 'Number', 'Name', 'Loan_Type'])
+    PreProcessingData.list_of_dropped_columns = ['ID', 'Customer_ID', 'Number', 'Name', 'Loan_Type']
     cols_with_NaNs = df.isna().sum() * 100 / df.shape[0]
     cols_with_NaNs = cols_with_NaNs[cols_with_NaNs >= 5].keys()
+    PreProcessingData.list_of_dropped_columns += (list(cols_with_NaNs))
     df.drop(columns=cols_with_NaNs, inplace=True)
 
     df["Total_Current_Loans"] = df["Total_Current_Loans"].apply(lambda x: int(x[:-1]) if x[-1] == '_' else int(x))
@@ -30,6 +34,8 @@ def PreProcessingData( df:pd.DataFrame ):
 
     # Checking removing rows with NaNs and '-100' number of loans
     for col in df.columns:
+        if np.any(df[col].isna):
+            print(col)
         df.drop(labels=df.index[df[col].isna()], inplace=True)
     df.drop(labels=df.index[df["Age"] < 0], inplace=True)
     df.drop(labels=df.index[df["Total_Bank_Accounts"] < 0], inplace=True)
@@ -37,7 +43,32 @@ def PreProcessingData( df:pd.DataFrame ):
 ```
 
 ```{python}
+
+def PreProcessingTestData( df:pd.DataFrame ):
+    df.drop(inplace=True, columns=PreProcessingData.list_of_dropped_columns)
+    cols_with_NaNs = df.isna().sum() * 100 / df.shape[0]
+    cols_with_NaNs = cols_with_NaNs[cols_with_NaNs >= 5].keys()
+    df.drop(columns=cols_with_NaNs, inplace=True)
+
+    df["Total_Current_Loans"] = df["Total_Current_Loans"].apply(lambda x: int(x[:-1]) if x[-1] == '_' else int(x))
+    df["Income_Annual"] = df["Income_Annual"].apply(lambda x: float(x[:-1]) if x[-1] == '_' else float(x))
+    df["Age"] = df["Age"].apply(lambda x: float(x[:-1]) if x[-1] == '_' else float(x))
+    df["Payment_of_Min_Amount"] = df["Payment_of_Min_Amount"].apply(lambda x : True if (x=="Yes" or x=="NM") else False)
+
+    
+
+
+```
+
+```{python}
 df = pd.read_csv("data/train.csv", low_memory=False)
 PreProcessingData(df)
 df.describe()
+print(PreProcessingData.list_of_dropped_columns)
+```
+```{python}
+test_df = pd.read_csv("data/test.csv", low_memory=False)
+print(test_df.shape)
+PreProcessingTestData(test_df)
+print(test_df.shape)
 ```
